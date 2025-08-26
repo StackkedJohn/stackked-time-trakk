@@ -83,10 +83,10 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold glass-text gradient-text mb-4">
-            Timecard Tracker
+            Stackked Time Trakk
           </h1>
           <p className="text-xl glass-text-muted">
-            Track your time with beautiful glassmorphism design
+            Stakk your hours here
           </p>
         </div>
 
