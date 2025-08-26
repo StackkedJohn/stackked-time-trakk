@@ -6,8 +6,11 @@ import { TimeEntries } from '@/components/timecard/TimeEntries';
 import { ReportPeriodSelector, ReportPeriod } from '@/components/timecard/ReportPeriodSelector';
 import { WeeklyReport } from '@/components/timecard/WeeklyReport';
 import { useTimeEntries } from '@/hooks/useTimeEntries';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { LogOut, User } from 'lucide-react';
 
 const Index = () => {
   const [isClockedIn, setIsClockedIn] = useState(false);
@@ -15,7 +18,19 @@ const Index = () => {
   const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('weekly');
   const [reportDate, setReportDate] = useState(new Date());
   const { entries, loading, addEntry, deleteEntry } = useTimeEntries();
+  const { user, signOut } = useAuth();
   const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleClockIn = () => {
     const now = new Date();
@@ -81,13 +96,31 @@ const Index = () => {
     <div className="min-h-screen p-4 md:p-8 space-y-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold glass-text gradient-text mb-4">
-            Stackked Time Trakk
-          </h1>
-          <p className="text-xl glass-text-muted">
-            Stakk your hours here
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div className="text-center flex-1">
+            <h1 className="text-5xl font-bold glass-text gradient-text mb-4">
+              Stackked Time Trakk
+            </h1>
+            <p className="text-xl glass-text-muted">
+              Stakk your hours here
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="glass rounded-xl px-4 py-2 flex items-center space-x-2">
+              <User className="w-4 h-4 glass-text" />
+              <span className="glass-text text-sm">{user?.email}</span>
+            </div>
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+              size="sm"
+              className="glass-hover glass-text hover:glass-text"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
 
         {/* Current Time Display */}
