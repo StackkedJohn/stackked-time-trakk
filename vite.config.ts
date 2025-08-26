@@ -20,3 +20,21 @@ export default defineConfig(({ mode }) => ({
     },
   },
 }));
+// In your vite.config.ts, replace the direct import with:
+let lovableTagger;
+try {
+  lovableTagger = require('lovable-tagger');
+} catch (e) {
+  // lovable-tagger not available in production build
+  lovableTagger = null;
+}
+
+// Then use it conditionally in your plugins array
+export default defineConfig({
+  plugins: [
+    react(),
+    // Only use lovable-tagger if available
+    ...(lovableTagger ? [lovableTagger()] : [])
+  ],
+  // ... rest of config
+})
