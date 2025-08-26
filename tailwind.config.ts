@@ -52,6 +52,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				glass: {
+					primary: 'hsl(var(--glass-primary))',
+					secondary: 'hsl(var(--glass-secondary))',
+					border: 'hsl(var(--glass-border))',
+					hover: 'hsl(var(--glass-hover))',
+					text: 'hsl(var(--glass-text))',
+					muted: 'hsl(var(--glass-text-muted))',
+					subtle: 'hsl(var(--glass-text-subtle))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
