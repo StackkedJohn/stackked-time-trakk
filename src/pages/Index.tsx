@@ -3,12 +3,17 @@ import { TimeDisplay } from '@/components/timecard/TimeDisplay';
 import { ClockInOut } from '@/components/timecard/ClockInOut';
 import { ManualEntry } from '@/components/timecard/ManualEntry';
 import { TimeEntries, TimeEntry } from '@/components/timecard/TimeEntries';
+import { ReportPeriodSelector, ReportPeriod } from '@/components/timecard/ReportPeriodSelector';
+import { WeeklyReport } from '@/components/timecard/WeeklyReport';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Index = () => {
   const [isClockedIn, setIsClockedIn] = useState(false);
   const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [currentClockIn, setCurrentClockIn] = useState<Date | null>(null);
+  const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('weekly');
+  const [reportDate, setReportDate] = useState(new Date());
   const { toast } = useToast();
 
   const handleClockIn = () => {
@@ -85,21 +90,58 @@ const Index = () => {
           <TimeDisplay />
         </div>
 
-        {/* Clock In/Out and Manual Entry */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <ClockInOut
-            onClockIn={handleClockIn}
-            onClockOut={handleClockOut}
-            isClockedIn={isClockedIn}
-          />
-          <ManualEntry onAddEntry={handleAddManualEntry} />
-        </div>
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="timecard" className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="glass glass-hover border-white/20">
+              <TabsTrigger 
+                value="timecard" 
+                className="glass-text data-[state=active]:bg-primary/30 data-[state=active]:glass-text"
+              >
+                Time Tracking
+              </TabsTrigger>
+              <TabsTrigger 
+                value="reports" 
+                className="glass-text data-[state=active]:bg-primary/30 data-[state=active]:glass-text"
+              >
+                Reports
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-        {/* Time Entries */}
-        <TimeEntries
-          entries={entries}
-          onDeleteEntry={handleDeleteEntry}
-        />
+          <TabsContent value="timecard" className="space-y-8">
+            {/* Clock In/Out and Manual Entry */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <ClockInOut
+                onClockIn={handleClockIn}
+                onClockOut={handleClockOut}
+                isClockedIn={isClockedIn}
+              />
+              <ManualEntry onAddEntry={handleAddManualEntry} />
+            </div>
+
+            {/* Time Entries */}
+            <TimeEntries
+              entries={entries}
+              onDeleteEntry={handleDeleteEntry}
+            />
+          </TabsContent>
+
+          <TabsContent value="reports" className="space-y-8">
+            <ReportPeriodSelector
+              periodType={reportPeriod}
+              currentDate={reportDate}
+              onPeriodChange={setReportPeriod}
+              onDateChange={setReportDate}
+            />
+            
+            <WeeklyReport
+              entries={entries}
+              periodType={reportPeriod}
+              currentDate={reportDate}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
