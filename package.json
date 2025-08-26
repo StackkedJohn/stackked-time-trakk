@@ -1,1 +1,1 @@
-{"name":"stackked-time-trakk","version":"1.0.0","private":true,"dependencies":{"react-day-picker":"9.8.1","react-scripts":"^0.0.0"},"devDependencies":{"vite":"^7.1.3"}}
+{"name":"stackked-time-trakk","version":"1.0.0","private":true,"dependencies":{"react-day-picker":"9.8.1","react-scripts":"^0.0.0"},"devDependencies":{"@vitejs/plugin-react":"^5.0.1","@vitejs/plugin-react-swc":"^4.0.1","vite":"^7.1.3"}}
