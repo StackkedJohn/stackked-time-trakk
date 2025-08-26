@@ -9,9 +9,19 @@ interface TimeEntriesProps {
 
 export const TimeEntries = ({ entries, onDeleteEntry }: TimeEntriesProps) => {
   const calculateHours = (entry: TimeEntry) => {
-    const start = new Date(`${entry.start_date}T${entry.start_time}`);
-    const end = new Date(`${entry.end_date}T${entry.end_time}`);
-    const diff = end.getTime() - start.getTime();
+    // Create dates with explicit timezone handling to prevent date shifts
+    const startDate = new Date(entry.start_date + 'T00:00:00');
+    const endDate = new Date(entry.end_date + 'T00:00:00');
+    
+    // Parse time components
+    const [startHours, startMinutes] = entry.start_time.split(':').map(Number);
+    const [endHours, endMinutes] = entry.end_time.split(':').map(Number);
+    
+    // Set the times on the correct dates
+    startDate.setHours(startHours, startMinutes, 0, 0);
+    endDate.setHours(endHours, endMinutes, 0, 0);
+    
+    const diff = endDate.getTime() - startDate.getTime();
     return (diff / (1000 * 60 * 60)).toFixed(2);
   };
 
