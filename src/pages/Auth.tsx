@@ -93,8 +93,8 @@ const Auth = () => {
           <h1 className="text-4xl font-bold glass-text gradient-text mb-2">
             Stackked Time Trakk
           </h1>
-          <p className="glass-text-muted">
-            Stakk your hours here
+          <p className="glass-text-muted font-bold">
+            Stakk and Trakk Your Time Here!
           </p>
         </div>
 

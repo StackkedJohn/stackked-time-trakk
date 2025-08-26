@@ -101,8 +101,8 @@ const Index = () => {
             <h1 className="text-5xl font-bold glass-text gradient-text mb-4">
               Stackked Time Trakk
             </h1>
-            <p className="text-xl glass-text-muted">
-              Stakk your hours here
+            <p className="text-xl glass-text-muted font-bold">
+              Stakk and Trakk Your Time Here!
             </p>
           </div>
           
