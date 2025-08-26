@@ -1,1 +1,1 @@
-{"name":"stackked-time-trakk","version":"1.0.0","private":true,"dependencies":{"react-day-picker":"9.8.1"}}
+{"name":"stackked-time-trakk","version":"1.0.0","private":true,"dependencies":{"react-day-picker":"9.8.1","react-scripts":"^0.0.0"}}
