@@ -5,6 +5,7 @@ import { ManualEntry } from '@/components/timecard/ManualEntry';
 import { TimeEntries } from '@/components/timecard/TimeEntries';
 import { ReportPeriodSelector, ReportPeriod } from '@/components/timecard/ReportPeriodSelector';
 import { WeeklyReport } from '@/components/timecard/WeeklyReport';
+import { CalendarView } from '@/components/timecard/CalendarView';
 import { useTimeEntries } from '@/hooks/useTimeEntries';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -172,6 +173,8 @@ const Index = () => {
               onPeriodChange={setReportPeriod}
               onDateChange={setReportDate}
             />
+            
+            <CalendarView entries={entries} />
             
             <WeeklyReport
               entries={entries}
