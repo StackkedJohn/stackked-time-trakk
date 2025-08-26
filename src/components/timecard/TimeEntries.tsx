@@ -1,15 +1,6 @@
 import { Trash2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
-export interface TimeEntry {
-  id: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  description?: string;
-  clockIn?: Date;
-  clockOut?: Date;
-}
+import { TimeEntry } from '@/hooks/useTimeEntries';
 
 interface TimeEntriesProps {
   entries: TimeEntry[];
@@ -18,15 +9,10 @@ interface TimeEntriesProps {
 
 export const TimeEntries = ({ entries, onDeleteEntry }: TimeEntriesProps) => {
   const calculateHours = (entry: TimeEntry) => {
-    if (entry.clockIn && entry.clockOut) {
-      const diff = entry.clockOut.getTime() - entry.clockIn.getTime();
-      return (diff / (1000 * 60 * 60)).toFixed(2);
-    } else {
-      const start = new Date(`${entry.date}T${entry.startTime}`);
-      const end = new Date(`${entry.date}T${entry.endTime}`);
-      const diff = end.getTime() - start.getTime();
-      return (diff / (1000 * 60 * 60)).toFixed(2);
-    }
+    const start = new Date(`${entry.start_date}T${entry.start_time}`);
+    const end = new Date(`${entry.end_date}T${entry.end_time}`);
+    const diff = end.getTime() - start.getTime();
+    return (diff / (1000 * 60 * 60)).toFixed(2);
   };
 
   const getTotalHours = () => {
@@ -77,22 +63,24 @@ export const TimeEntries = ({ entries, onDeleteEntry }: TimeEntriesProps) => {
                   <div className="space-y-1">
                     <div className="flex items-center space-x-4">
                       <span className="glass-text font-semibold">
-                        {new Date(entry.date).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
+                        {entry.start_date === entry.end_date ? (
+                          new Date(entry.start_date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric'
+                          })
+                        ) : (
+                          `${new Date(entry.start_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })} - ${new Date(entry.end_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric'
+                          })}`
+                        )}
                       </span>
                       <span className="glass-text-muted">
-                        {entry.clockIn && entry.clockOut ? (
-                          <>
-                            {formatDateTime(entry.clockIn)} - {formatDateTime(entry.clockOut)}
-                          </>
-                        ) : (
-                          <>
-                            {formatTime(entry.startTime)} - {formatTime(entry.endTime)}
-                          </>
-                        )}
+                        {formatTime(entry.start_time)} - {formatTime(entry.end_time)}
                       </span>
                       <span className="glass-text font-bold text-accent">
                         {calculateHours(entry)}h

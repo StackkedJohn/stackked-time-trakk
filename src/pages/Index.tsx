@@ -2,18 +2,19 @@ import { useState } from 'react';
 import { TimeDisplay } from '@/components/timecard/TimeDisplay';
 import { ClockInOut } from '@/components/timecard/ClockInOut';
 import { ManualEntry } from '@/components/timecard/ManualEntry';
-import { TimeEntries, TimeEntry } from '@/components/timecard/TimeEntries';
+import { TimeEntries } from '@/components/timecard/TimeEntries';
 import { ReportPeriodSelector, ReportPeriod } from '@/components/timecard/ReportPeriodSelector';
 import { WeeklyReport } from '@/components/timecard/WeeklyReport';
+import { useTimeEntries } from '@/hooks/useTimeEntries';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Index = () => {
   const [isClockedIn, setIsClockedIn] = useState(false);
-  const [entries, setEntries] = useState<TimeEntry[]>([]);
   const [currentClockIn, setCurrentClockIn] = useState<Date | null>(null);
   const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('weekly');
   const [reportDate, setReportDate] = useState(new Date());
+  const { entries, loading, addEntry, deleteEntry } = useTimeEntries();
   const { toast } = useToast();
 
   const handleClockIn = () => {
@@ -29,17 +30,19 @@ const Index = () => {
   const handleClockOut = () => {
     if (currentClockIn) {
       const now = new Date();
-      const newEntry: TimeEntry = {
-        id: Date.now().toString(),
-        date: now.toISOString().split('T')[0],
-        startTime: currentClockIn.toTimeString().slice(0, 5),
-        endTime: now.toTimeString().slice(0, 5),
-        clockIn: currentClockIn,
-        clockOut: now,
-        description: 'Clock In/Out Session'
+      const clockInDate = currentClockIn.toISOString().split('T')[0];
+      const clockOutDate = now.toISOString().split('T')[0];
+      
+      const newEntry = {
+        start_date: clockInDate,
+        end_date: clockOutDate,
+        start_time: currentClockIn.toTimeString().slice(0, 5),
+        end_time: now.toTimeString().slice(0, 5),
+        description: 'Clock In/Out Session',
+        entry_type: 'clock' as const
       };
       
-      setEntries(prev => [newEntry, ...prev]);
+      addEntry(newEntry);
       setIsClockedIn(false);
       setCurrentClockIn(null);
       
@@ -51,25 +54,27 @@ const Index = () => {
     }
   };
 
-  const handleAddManualEntry = (entry: { date: string; startTime: string; endTime: string; description: string }) => {
-    const newEntry: TimeEntry = {
-      id: Date.now().toString(),
-      ...entry
+  const handleAddManualEntry = (entry: { 
+    startDate: string; 
+    endDate: string; 
+    startTime: string; 
+    endTime: string; 
+    description: string 
+  }) => {
+    const newEntry = {
+      start_date: entry.startDate,
+      end_date: entry.endDate,
+      start_time: entry.startTime,
+      end_time: entry.endTime,
+      description: entry.description || undefined,
+      entry_type: 'manual' as const
     };
     
-    setEntries(prev => [newEntry, ...prev]);
-    toast({
-      title: "Entry Added",
-      description: "Manual time entry has been added successfully",
-    });
+    addEntry(newEntry);
   };
 
   const handleDeleteEntry = (id: string) => {
-    setEntries(prev => prev.filter(entry => entry.id !== id));
-    toast({
-      title: "Entry Deleted",
-      description: "Time entry has been removed",
-    });
+    deleteEntry(id);
   };
 
   return (

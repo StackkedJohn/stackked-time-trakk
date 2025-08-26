@@ -5,19 +5,26 @@ import { Label } from '@/components/ui/label';
 import { Plus } from 'lucide-react';
 
 interface ManualEntryProps {
-  onAddEntry: (entry: { date: string; startTime: string; endTime: string; description: string }) => void;
+  onAddEntry: (entry: { 
+    startDate: string; 
+    endDate: string; 
+    startTime: string; 
+    endTime: string; 
+    description: string 
+  }) => void;
 }
 
 export const ManualEntry = ({ onAddEntry }: ManualEntryProps) => {
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [description, setDescription] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (date && startTime && endTime) {
-      onAddEntry({ date, startTime, endTime, description });
+    if (startDate && endDate && startTime && endTime) {
+      onAddEntry({ startDate, endDate, startTime, endTime, description });
       setStartTime('');
       setEndTime('');
       setDescription('');
@@ -35,28 +42,40 @@ export const ManualEntry = ({ onAddEntry }: ManualEntryProps) => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="date" className="glass-text">Date</Label>
+              <Label htmlFor="startDate" className="glass-text">Start Date</Label>
               <Input
-                id="date"
+                id="startDate"
                 type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
                 className="glass glass-hover border-white/20 glass-text placeholder:glass-text-subtle"
                 required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description" className="glass-text">Description</Label>
+              <Label htmlFor="endDate" className="glass-text">End Date</Label>
               <Input
-                id="description"
-                type="text"
-                placeholder="Work description (optional)"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                id="endDate"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
                 className="glass glass-hover border-white/20 glass-text placeholder:glass-text-subtle"
+                required
               />
             </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description" className="glass-text">Description</Label>
+            <Input
+              id="description"
+              type="text"
+              placeholder="Work description (optional)"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="glass glass-hover border-white/20 glass-text placeholder:glass-text-subtle"
+            />
           </div>
           
           <div className="grid grid-cols-2 gap-4">

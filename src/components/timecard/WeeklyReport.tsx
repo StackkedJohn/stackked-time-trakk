@@ -1,4 +1,4 @@
-import { TimeEntry } from './TimeEntries';
+import { TimeEntry } from '@/hooks/useTimeEntries';
 import { BarChart3, Clock, TrendingUp } from 'lucide-react';
 
 export type ReportPeriod = 'weekly' | 'biweekly';
@@ -39,21 +39,16 @@ export const WeeklyReport = ({ entries, periodType, currentDate }: WeeklyReportP
     const end = getCurrentPeriodEnd();
     
     return entries.filter(entry => {
-      const entryDate = new Date(entry.date);
+      const entryDate = new Date(entry.start_date);
       return entryDate >= start && entryDate <= end;
     });
   };
 
   const calculateHours = (entry: TimeEntry) => {
-    if (entry.clockIn && entry.clockOut) {
-      const diff = entry.clockOut.getTime() - entry.clockIn.getTime();
-      return diff / (1000 * 60 * 60);
-    } else {
-      const start = new Date(`${entry.date}T${entry.startTime}`);
-      const end = new Date(`${entry.date}T${entry.endTime}`);
-      const diff = end.getTime() - start.getTime();
-      return diff / (1000 * 60 * 60);
-    }
+    const start = new Date(`${entry.start_date}T${entry.start_time}`);
+    const end = new Date(`${entry.end_date}T${entry.end_time}`);
+    const diff = end.getTime() - start.getTime();
+    return diff / (1000 * 60 * 60);
   };
 
   const getGroupedByDay = () => {
@@ -61,7 +56,7 @@ export const WeeklyReport = ({ entries, periodType, currentDate }: WeeklyReportP
     const grouped: { [key: string]: TimeEntry[] } = {};
     
     filtered.forEach(entry => {
-      const date = entry.date;
+      const date = entry.start_date;
       if (!grouped[date]) {
         grouped[date] = [];
       }
@@ -194,7 +189,7 @@ export const WeeklyReport = ({ entries, periodType, currentDate }: WeeklyReportP
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="glass-text font-medium">
-                      {new Date(entry.date).toLocaleDateString('en-US', {
+                      {new Date(entry.start_date).toLocaleDateString('en-US', {
                         weekday: 'short',
                         month: 'short',
                         day: 'numeric'
@@ -211,23 +206,7 @@ export const WeeklyReport = ({ entries, periodType, currentDate }: WeeklyReportP
                       {calculateHours(entry).toFixed(2)}h
                     </div>
                     <div className="glass-text-muted text-sm">
-                      {entry.clockIn && entry.clockOut ? (
-                        <>
-                          {entry.clockIn.toLocaleTimeString('en-US', { 
-                            hour12: true, 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })} - {entry.clockOut.toLocaleTimeString('en-US', { 
-                            hour12: true, 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </>
-                      ) : (
-                        <>
-                          {entry.startTime} - {entry.endTime}
-                        </>
-                      )}
+                      {entry.start_time} - {entry.end_time}
                     </div>
                   </div>
                 </div>
