@@ -43,9 +43,20 @@ export const useTimeEntries = () => {
 
   const addEntry = async (entry: Omit<TimeEntry, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
+      const entryWithUserId = {
+        ...entry,
+        user_id: user.id
+      };
+
       const { data, error } = await supabase
         .from('time_entries')
-        .insert([entry])
+        .insert([entryWithUserId])
         .select()
         .single();
 
