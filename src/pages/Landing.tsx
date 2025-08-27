@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Clock, ArrowRight, CheckCircle, Timer, BarChart3 } from 'lucide-react';
+import { Clock, ArrowRight, CheckCircle, Timer, BarChart3, FileText, Play } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import dashboardMock from '@/assets/dashboard-mock.png';
 
@@ -92,6 +92,44 @@ const Landing = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Feature Strip */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Feature 1 */}
+          <div className="glass rounded-xl p-6 text-center">
+            <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Play className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="text-lg font-semibold glass-text mb-2">One‑tap timer</h3>
+            <p className="glass-text-muted text-sm">
+              Start, switch, done.
+            </p>
+          </div>
+          
+          {/* Feature 2 */}
+          <div className="glass rounded-xl p-6 text-center">
+            <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <BarChart3 className="w-6 h-6 text-accent" />
+            </div>
+            <h3 className="text-lg font-semibold glass-text mb-2">Reports that explain themselves</h3>
+            <p className="glass-text-muted text-sm">
+              Hours, billables, budgets.
+            </p>
+          </div>
+          
+          {/* Feature 3 */}
+          <div className="glass rounded-xl p-6 text-center">
+            <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <FileText className="w-6 h-6 text-green-400" />
+            </div>
+            <h3 className="text-lg font-semibold glass-text mb-2">Invoices without spreadsheets</h3>
+            <p className="glass-text-muted text-sm">
+              PDF or export to accounting.
+            </p>
           </div>
         </div>
       </div>
