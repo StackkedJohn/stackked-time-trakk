@@ -6,21 +6,38 @@ import { TimeEntries } from '@/components/timecard/TimeEntries';
 import { ReportPeriodSelector, ReportPeriod } from '@/components/timecard/ReportPeriodSelector';
 import { WeeklyReport } from '@/components/timecard/WeeklyReport';
 import { CalendarView } from '@/components/timecard/CalendarView';
+import { IdlePrompt } from '@/components/timecard/IdlePrompt';
 import { useTimeEntries } from '@/hooks/useTimeEntries';
+import { useTimer } from '@/hooks/useTimer';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Keyboard } from 'lucide-react';
 
 const Index = () => {
-  const [isClockedIn, setIsClockedIn] = useState(false);
-  const [currentClockIn, setCurrentClockIn] = useState<Date | null>(null);
   const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('weekly');
   const [reportDate, setReportDate] = useState(new Date());
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  
   const { entries, loading, addEntry, deleteEntry } = useTimeEntries();
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  
+  // Enhanced timer with smart switching and idle detection
+  const { 
+    isRunning,
+    currentSession,
+    startTimer,
+    stopTimer,
+    switchToLastTask,
+    isIdle,
+    idleDuration,
+    showIdlePrompt,
+    handleIdleAction,
+    dismissIdlePrompt
+  } = useTimer();
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -33,42 +50,40 @@ const Index = () => {
     }
   };
 
+  // Timer actions that integrate with enhanced timer system
   const handleClockIn = () => {
-    const now = new Date();
-    setIsClockedIn(true);
-    setCurrentClockIn(now);
-    toast({
-      title: "Clocked In",
-      description: `You clocked in at ${now.toLocaleTimeString()}`,
-    });
+    startTimer('Work Session');
   };
 
   const handleClockOut = () => {
-    if (currentClockIn) {
-      const now = new Date();
-      const clockInDate = currentClockIn.toISOString().split('T')[0];
-      const clockOutDate = now.toISOString().split('T')[0];
-      
-      const newEntry = {
-        start_date: clockInDate,
-        end_date: clockOutDate,
-        start_time: currentClockIn.toTimeString().slice(0, 5),
-        end_time: now.toTimeString().slice(0, 5),
-        description: 'Clock In/Out Session',
-        entry_type: 'clock' as const
-      };
-      
-      addEntry(newEntry);
-      setIsClockedIn(false);
-      setCurrentClockIn(null);
-      
-      const hours = ((now.getTime() - currentClockIn.getTime()) / (1000 * 60 * 60)).toFixed(2);
-      toast({
-        title: "Clocked Out",
-        description: `You worked for ${hours} hours`,
-      });
+    stopTimer();
+  };
+
+  // Keyboard shortcut callbacks
+  const shortcutCallbacks = {
+    onStartStop: () => {
+      if (isRunning) {
+        handleClockOut();
+      } else {
+        handleClockIn();
+      }
+    },
+    onSwitchToLast: switchToLastTask,
+    onNewManualEntry: () => {
+      // Focus the manual entry form
+      const manualEntrySection = document.querySelector('[data-manual-entry]');
+      if (manualEntrySection) {
+        manualEntrySection.scrollIntoView({ behavior: 'smooth' });
+        const firstInput = manualEntrySection.querySelector('input');
+        if (firstInput) {
+          (firstInput as HTMLInputElement).focus();
+        }
+      }
     }
   };
+
+  // Enable keyboard shortcuts
+  const { shortcuts } = useKeyboardShortcuts(shortcutCallbacks);
 
   const handleAddManualEntry = (entry: { 
     startDate: string; 
@@ -113,6 +128,16 @@ const Index = () => {
               <span className="glass-text text-sm">{user?.email}</span>
             </div>
             <Button
+              onClick={() => setShowShortcuts(!showShortcuts)}
+              variant="ghost"
+              size="sm"
+              className="glass-hover glass-text hover:glass-text"
+              aria-label="Toggle keyboard shortcuts help"
+            >
+              <Keyboard className="w-4 h-4 mr-2" />
+              Shortcuts
+            </Button>
+            <Button
               onClick={handleSignOut}
               variant="ghost"
               size="sm"
@@ -128,6 +153,31 @@ const Index = () => {
         <div className="mb-8">
           <TimeDisplay />
         </div>
+
+        {/* Keyboard Shortcuts Help */}
+        {showShortcuts && (
+          <div className="glass rounded-xl p-4 mb-8">
+            <h3 className="text-lg font-semibold glass-text mb-3">Keyboard Shortcuts</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              {shortcuts.map(shortcut => (
+                <div key={shortcut.key} className="flex items-center space-x-2">
+                  <kbd className="px-2 py-1 bg-primary/20 rounded text-xs font-mono glass-text">
+                    {shortcut.key.toUpperCase()}
+                  </kbd>
+                  <span className="glass-text-muted">{shortcut.description}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Idle Detection Prompt */}
+        <IdlePrompt
+          idleDuration={idleDuration}
+          onAction={handleIdleAction}
+          onDismiss={dismissIdlePrompt}
+          isVisible={showIdlePrompt}
+        />
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="timecard" className="space-y-8">
@@ -154,9 +204,11 @@ const Index = () => {
               <ClockInOut
                 onClockIn={handleClockIn}
                 onClockOut={handleClockOut}
-                isClockedIn={isClockedIn}
+                isClockedIn={isRunning}
               />
-              <ManualEntry onAddEntry={handleAddManualEntry} />
+              <div data-manual-entry>
+                <ManualEntry onAddEntry={handleAddManualEntry} />
+              </div>
             </div>
 
             {/* Time Entries */}
