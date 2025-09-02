@@ -1,5 +1,7 @@
-import { describe, test, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { render } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 import { IdlePrompt } from '../IdlePrompt';
 
 describe('IdlePrompt', () => {
@@ -34,47 +36,52 @@ describe('IdlePrompt', () => {
     expect(screen.getByText(/5m 0s/)).toBeInTheDocument();
   });
 
-  test('calls onAction with keep when Keep Time button clicked', () => {
+  test('calls onAction with keep when Keep Time button clicked', async () => {
+    const user = userEvent.setup();
     render(<IdlePrompt {...defaultProps} />);
     
     const keepButton = screen.getByRole('button', { name: /keep idle time/i });
-    fireEvent.click(keepButton);
+    await user.click(keepButton);
     
     expect(defaultProps.onAction).toHaveBeenCalledWith('keep');
   });
 
-  test('calls onAction with discard when Discard Idle button clicked', () => {
+  test('calls onAction with discard when Discard Idle button clicked', async () => {
+    const user = userEvent.setup();
     render(<IdlePrompt {...defaultProps} />);
     
     const discardButton = screen.getByRole('button', { name: /discard idle time/i });
-    fireEvent.click(discardButton);
+    await user.click(discardButton);
     
     expect(defaultProps.onAction).toHaveBeenCalledWith('discard');
   });
 
-  test('calls onAction with split when Split Session button clicked', () => {
+  test('calls onAction with split when Split Session button clicked', async () => {
+    const user = userEvent.setup();
     render(<IdlePrompt {...defaultProps} />);
     
     const splitButton = screen.getByRole('button', { name: /split session/i });
-    fireEvent.click(splitButton);
+    await user.click(splitButton);
     
     expect(defaultProps.onAction).toHaveBeenCalledWith('split');
   });
 
-  test('calls onDismiss when dismiss button clicked', () => {
+  test('calls onDismiss when dismiss button clicked', async () => {
+    const user = userEvent.setup();
     render(<IdlePrompt {...defaultProps} />);
     
     const dismissButton = screen.getByRole('button', { name: /dismiss idle prompt/i });
-    fireEvent.click(dismissButton);
+    await user.click(dismissButton);
     
     expect(defaultProps.onDismiss).toHaveBeenCalled();
   });
 
-  test('disables action buttons after selection', () => {
+  test('disables action buttons after selection', async () => {
+    const user = userEvent.setup();
     render(<IdlePrompt {...defaultProps} />);
     
     const keepButton = screen.getByRole('button', { name: /keep idle time/i });
-    fireEvent.click(keepButton);
+    await user.click(keepButton);
     
     // All action buttons should be disabled
     expect(screen.getByRole('button', { name: /keep idle time/i })).toBeDisabled();
@@ -82,11 +89,12 @@ describe('IdlePrompt', () => {
     expect(screen.getByRole('button', { name: /split session/i })).toBeDisabled();
   });
 
-  test('shows processing message after action selection', () => {
+  test('shows processing message after action selection', async () => {
+    const user = userEvent.setup();
     render(<IdlePrompt {...defaultProps} />);
     
     const keepButton = screen.getByRole('button', { name: /keep idle time/i });
-    fireEvent.click(keepButton);
+    await user.click(keepButton);
     
     expect(screen.getByText('Processing keep action...')).toBeInTheDocument();
   });
