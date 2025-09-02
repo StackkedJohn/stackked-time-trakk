@@ -11,18 +11,23 @@ import { useTimeEntries } from '@/hooks/useTimeEntries';
 import { useTimer } from '@/hooks/useTimer';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useAuth } from '@/hooks/useAuth';
+import { useWizard } from '@/hooks/useWizard';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Keyboard } from 'lucide-react';
+import { WizardOverlay } from '@/components/wizard/WizardOverlay';
+import { useEffect } from 'react';
 
 const Index = () => {
   const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('weekly');
   const [reportDate, setReportDate] = useState(new Date());
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);
   
   const { entries, loading, addEntry, deleteEntry } = useTimeEntries();
   const { user, signOut } = useAuth();
+  const { shouldShowWizard } = useWizard();
   const { toast } = useToast();
   
   // Enhanced timer with smart switching and idle detection
@@ -84,6 +89,13 @@ const Index = () => {
 
   // Enable keyboard shortcuts
   const { shortcuts } = useKeyboardShortcuts(shortcutCallbacks);
+
+  // Check if wizard should be shown on mount
+  useEffect(() => {
+    if (shouldShowWizard()) {
+      setShowWizard(true);
+    }
+  }, [shouldShowWizard]);
 
   const handleAddManualEntry = (entry: { 
     startDate: string; 
@@ -236,6 +248,11 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* First-run wizard */}
+      {showWizard && (
+        <WizardOverlay onClose={() => setShowWizard(false)} />
+      )}
     </div>
   );
 };
