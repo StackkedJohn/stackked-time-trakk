@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface TimeEntry {
   id: string;
-  project_id?: string | null;
   start_date: string;
   end_date: string;
   start_time: string;
