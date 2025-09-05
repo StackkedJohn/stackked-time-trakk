@@ -3,8 +3,7 @@ import { TimeDisplay } from '@/components/timecard/TimeDisplay';
 import { ClockInOut } from '@/components/timecard/ClockInOut';
 import { ManualEntry } from '@/components/timecard/ManualEntry';
 import { TimeEntries } from '@/components/timecard/TimeEntries';
-import { ReportPeriodSelector, ReportPeriod } from '@/components/timecard/ReportPeriodSelector';
-import { WeeklyReport } from '@/components/timecard/WeeklyReport';
+import { ReportsOverview } from '@/components/timecard/ReportsOverview';
 import { CalendarView } from '@/components/timecard/CalendarView';
 import { IdlePrompt } from '@/components/timecard/IdlePrompt';
 import { useTimeEntries } from '@/hooks/useTimeEntries';
@@ -17,8 +16,6 @@ import { Button } from '@/components/ui/button';
 import { LogOut, User, Keyboard } from 'lucide-react';
 
 const Index = () => {
-  const [reportPeriod, setReportPeriod] = useState<ReportPeriod>('weekly');
-  const [reportDate, setReportDate] = useState(new Date());
   const [showShortcuts, setShowShortcuts] = useState(false);
   
   const { entries, loading, addEntry, deleteEntry } = useTimeEntries();
@@ -219,20 +216,11 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="reports" className="space-y-8">
-            <ReportPeriodSelector
-              periodType={reportPeriod}
-              currentDate={reportDate}
-              onPeriodChange={setReportPeriod}
-              onDateChange={setReportDate}
-            />
+            {/* Reports Overview with collapsible analytics */}
+            <ReportsOverview entries={entries} />
             
+            {/* Calendar View as a separate section */}
             <CalendarView entries={entries} />
-            
-            <WeeklyReport
-              entries={entries}
-              periodType={reportPeriod}
-              currentDate={reportDate}
-            />
           </TabsContent>
         </Tabs>
       </div>
