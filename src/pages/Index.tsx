@@ -6,17 +6,23 @@ import { TimeEntries } from '@/components/timecard/TimeEntries';
 import { ReportsOverview } from '@/components/timecard/ReportsOverview';
 import { CalendarView } from '@/components/timecard/CalendarView';
 import { IdlePrompt } from '@/components/timecard/IdlePrompt';
+import { FloatingBubbles } from '@/components/effects/FloatingBubbles';
+import { Background3D } from '@/components/effects/Background3D';
+import { MagneticButton } from '@/components/effects/MagneticButton';
+import { ParticleBurst } from '@/components/effects/ParticleBurst';
 import { useTimeEntries } from '@/hooks/useTimeEntries';
 import { useTimer } from '@/hooks/useTimer';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useParallax } from '@/hooks/useParallax';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { LogOut, User, Keyboard } from 'lucide-react';
 
 const Index = () => {
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const { getParallaxStyle } = useParallax();
   
   const { entries, loading, addEntry, deleteEntry } = useTimeEntries();
   const { user, signOut } = useAuth();
@@ -105,13 +111,18 @@ const Index = () => {
     deleteEntry(id);
   };
 
-  console.log('Index component rendering'); // Debug log
   
   return (
-    <div className="min-h-screen p-4 md:p-8 space-y-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen p-4 md:p-8 space-y-8 relative">
+      {/* Dynamic Background Effects */}
+      <Background3D />
+      <FloatingBubbles />
+      
+      <div className="max-w-7xl mx-auto relative z-10"
+           style={getParallaxStyle(0.5)}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 parallax-layer"
+             style={getParallaxStyle(0.3)}>
           <div className="text-center flex-1">
             <h1 className="text-5xl font-bold glass-text gradient-text mb-4">
               Stackked Time Trakk
@@ -122,40 +133,47 @@ const Index = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="glass rounded-xl px-4 py-2 flex items-center space-x-2">
+            <div className="glass rounded-xl px-4 py-2 flex items-center space-x-2 caustic-light">
               <User className="w-4 h-4 glass-text" />
               <span className="glass-text text-sm">{user?.email}</span>
             </div>
-            <Button
-              onClick={() => setShowShortcuts(!showShortcuts)}
-              variant="ghost"
-              size="sm"
-              className="glass-hover glass-text hover:glass-text"
-              aria-label="Toggle keyboard shortcuts help"
-            >
-              <Keyboard className="w-4 h-4 mr-2" />
-              Shortcuts
-            </Button>
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              size="sm"
-              className="glass-hover glass-text hover:glass-text"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            <MagneticButton>
+              <Button
+                onClick={() => setShowShortcuts(!showShortcuts)}
+                variant="ghost"
+                size="sm"
+                className="glass-hover glass-text hover:glass-text"
+                aria-label="Toggle keyboard shortcuts help"
+              >
+                <Keyboard className="w-4 h-4 mr-2" />
+                Shortcuts
+              </Button>
+            </MagneticButton>
+            <ParticleBurst>
+              <MagneticButton>
+                <Button
+                  onClick={handleSignOut}
+                  variant="ghost"
+                  size="sm"
+                  className="glass-hover glass-text hover:glass-text"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+              </MagneticButton>
+            </ParticleBurst>
           </div>
         </div>
 
         {/* Current Time Display */}
-        <div className="mb-8">
+        <div className="mb-8 parallax-layer" style={getParallaxStyle(0.4)}>
           <TimeDisplay />
         </div>
 
         {/* Keyboard Shortcuts Help */}
         {showShortcuts && (
-          <div className="glass rounded-xl p-4 mb-8">
+          <div className="glass rounded-xl p-4 mb-8 caustic-light prismatic"
+               style={getParallaxStyle(0.2)}>
             <h3 className="text-lg font-semibold glass-text mb-3">Keyboard Shortcuts</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               {shortcuts.map(shortcut => (
@@ -179,7 +197,8 @@ const Index = () => {
         />
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="timecard" className="space-y-8">
+        <Tabs defaultValue="timecard" className="space-y-8 parallax-layer"
+              style={getParallaxStyle(0.1)}>
           <div className="flex justify-center">
             <TabsList className="glass glass-hover border-white/20">
               <TabsTrigger 
