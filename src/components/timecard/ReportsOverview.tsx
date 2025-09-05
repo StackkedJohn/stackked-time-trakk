@@ -12,6 +12,7 @@ interface ReportsOverviewProps {
 }
 
 export const ReportsOverview = ({ entries }: ReportsOverviewProps) => {
+  console.log('ReportsOverview component rendering', { entries }); // Debug log
   const [isOpen, setIsOpen] = useState(true);
   const [periodType, setPeriodType] = useState<ReportPeriod>('weekly');
   const [currentDate, setCurrentDate] = useState(new Date());

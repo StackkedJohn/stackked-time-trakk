@@ -105,6 +105,8 @@ const Index = () => {
     deleteEntry(id);
   };
 
+  console.log('Index component rendering'); // Debug log
+  
   return (
     <div className="min-h-screen p-4 md:p-8 space-y-8">
       <div className="max-w-7xl mx-auto">
@@ -216,11 +218,13 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="reports" className="space-y-8">
-            {/* Reports Overview with collapsible analytics */}
-            <ReportsOverview entries={entries} />
-            
-            {/* Calendar View as a separate section */}
-            <CalendarView entries={entries} />
+            <div className="space-y-8">
+              {/* Reports Overview with collapsible analytics */}
+              <ReportsOverview entries={entries} />
+              
+              {/* Calendar View as a separate section */}
+              <CalendarView entries={entries} />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
